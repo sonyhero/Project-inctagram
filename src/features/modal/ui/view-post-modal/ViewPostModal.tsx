@@ -2,6 +2,7 @@ import React, { ChangeEvent, useState } from 'react'
 
 import ImageNext from 'next/image'
 import { useRouter } from 'next/router'
+import { toast } from 'react-toastify'
 
 import s from './ViewPostModal.module.scss'
 
@@ -9,6 +10,7 @@ import { PostsResponseType, useGetPublicUserProfileByIdQuery } from '@/entities'
 import { AvatarOwner } from '@/entities/avatar-owner'
 import { useUpdatePostByIdMutation } from '@/entities/posts'
 import { useMeQuery } from '@/features/auth'
+import { useAddCommentMutation } from '@/features/comments/api'
 import { modalActions, NameExtraModal } from '@/features/modal'
 import { PATH } from '@/shared/config/routes'
 import { usePostImagePagination, useTranslation } from '@/shared/hooks'
@@ -42,6 +44,7 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
   const profileId = Number(query.userId?.[0])
   const { data: profileData } = useGetPublicUserProfileByIdQuery({ profileId })
   const [updatePost] = useUpdatePostByIdMutation()
+  const [addComment, { isLoading }] = useAddCommentMutation()
   const { t } = useTranslation()
 
   const { data: meData } = useMeQuery()
@@ -51,6 +54,8 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
 
   const [editMode, setEditMode] = useState(false)
   const [value, setValue] = useState(postById?.description ?? '')
+
+  const [comment, setComment] = useState<string>('')
 
   const { filterImages, activeImage, prevImage, nextImage, activeIndex, setActiveIndex } =
     usePostImagePagination({ images: postById?.images })
@@ -68,6 +73,10 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
 
   const onChangeTextHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.currentTarget.value)
+  }
+
+  const onChangeCommentTextHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setComment(event.currentTarget.value)
   }
 
   const dropDownMenuSize = [
@@ -108,6 +117,16 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
         .unwrap()
         .then(() => {
           setEditMode(false)
+        })
+    }
+  }
+
+  const onPublishCommentHandler = () => {
+    if (postId) {
+      addComment({ postId, content: comment })
+        .unwrap()
+        .then(() => {
+          toast.success('Комментарий добавлен')
         })
     }
   }
@@ -209,9 +228,17 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
                   style={{ border: 'none' }}
                   type={'default'}
                   className={s.addComment}
+                  value={comment}
+                  onChange={onChangeCommentTextHandler}
                   placeholder={t.myProfile.profilePage.viewPost.addAComment}
                 />
-                <Button variant={'text'}>{t.myProfile.profilePage.viewPost.publish}</Button>
+                <Button
+                  disabled={comment.length < 1 || isLoading}
+                  onClick={onPublishCommentHandler}
+                  variant={'text'}
+                >
+                  {t.myProfile.profilePage.viewPost.publish}
+                </Button>
               </div>
             </div>
           ) : (
