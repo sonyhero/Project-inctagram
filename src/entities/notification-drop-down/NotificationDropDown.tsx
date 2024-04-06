@@ -6,65 +6,76 @@ import { useMarkNotificationAsReadMutation } from '@/features/notifications'
 import { useAppSelector } from '@/shared/store'
 import { Bell, Typography } from '@/shared/ui'
 import { DropDownMenu } from '@/shared/ui/drop-down-menu'
+import { formatRelativeTime } from '@/shared/utils'
 
 export const NotificationDropDown = () => {
-  const [openDropDown, setOpenDropDown] = useState(false)
+  const [isDropDownOpen, setIsDropDownOpen] = useState(false)
   const notifications = useAppSelector(state => state.notificationsSlice.notifications)
-  const [readNotifications] = useMarkNotificationAsReadMutation()
+  const [markNotificationsAsRead] = useMarkNotificationAsReadMutation()
 
-  const dropDownMenuItems = [
+  const dropDownItems = [
     {
       id: 1,
       component: (
-        <div style={{ width: '23.2rem', color: 'white' }}>
-          <span>Уведомления</span>
-        </div>
+        <Typography color={'primary'} variant={'regular16'}>
+          Уведомления
+        </Typography>
       ),
     },
     {
       id: 2,
       component: (
-        <div
-          style={{
-            width: '23.2rem',
-            display: 'flex',
-            flexDirection: 'column',
-            color: 'white',
-            gap: '10px',
-          }}
-        >
-          {notifications.map(el => {
-            return <div key={el.id}>{el.message}</div>
+        <div className={s.notifyContent}>
+          {notifications.map(notification => {
+            const dateToString = notification.notifyAt.toString()
+
+            //TODO: спросить Лёни какое время приходит с бека
+
+            return (
+              <Typography
+                className={s.notifyText}
+                key={notification.id}
+                color={'primary'}
+                variant={'regular14'}
+              >
+                {notification.message}
+                <br />
+                {formatRelativeTime(dateToString)}
+              </Typography>
+            )
           })}
         </div>
       ),
     },
   ]
 
-  const unReaderNotifications = notifications.filter(el => !el.isRead).map(el => el.id)
+  const unreadNotificationIds = notifications
+    .filter(notification => !notification.isRead)
+    .map(notification => notification.id)
 
   useEffect(() => {
-    if (openDropDown && !!unReaderNotifications.length) {
-      readNotifications({ ids: unReaderNotifications })
+    if (isDropDownOpen && unreadNotificationIds.length > 0) {
+      markNotificationsAsRead({ ids: unreadNotificationIds })
     }
-  }, [openDropDown])
+  }, [isDropDownOpen])
 
   return (
     <DropDownMenu
-      open={openDropDown}
-      setOpen={setOpenDropDown}
+      className={s.dropDownMenu}
+      open={isDropDownOpen}
+      setOpen={setIsDropDownOpen}
       align={'end'}
       trigger={
         <div className={s.bellWrapper}>
           <Bell />
-          {!!unReaderNotifications.length && (
+          {unreadNotificationIds.length > 0 && (
             <div className={s.count}>
-              <Typography variant={'small'}>{unReaderNotifications.length}</Typography>
+              <Typography variant={'small'}>{unreadNotificationIds.length}</Typography>
             </div>
           )}
         </div>
       }
-      items={dropDownMenuItems}
+      items={dropDownItems}
     />
   )
 }
