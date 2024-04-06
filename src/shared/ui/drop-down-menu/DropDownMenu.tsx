@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react'
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import { clsx } from 'clsx'
 import { motion } from 'framer-motion'
 
 import s from './DropDownMenu.module.scss'
@@ -15,6 +16,7 @@ type Props = {
   side?: 'top' | 'right' | 'bottom' | 'left'
   open?: boolean
   setOpen?: (value: boolean) => void
+  className?: string
 }
 
 const container = {
@@ -36,14 +38,9 @@ const motionItem = {
   },
 }
 
-export const DropDownMenu = ({
-  items,
-  trigger,
-  align = 'start',
-  side = 'top',
-  setOpen,
-  open,
-}: Props) => {
+export const DropDownMenu = (props: Props) => {
+  const { items, trigger, align = 'start', side = 'top', setOpen, open, className } = props
+
   const [isOpen, setIsOpen] = useState(open ? open : false)
 
   const itemsForRender = items?.map((item, index) => {
@@ -82,6 +79,8 @@ export const DropDownMenu = ({
     setOpen?.(true)
   }
 
+  const contentClassName = clsx([s.dropdownMenuContent, className])
+
   return (
     <DropdownMenu.Root open={isOpen} onOpenChange={onOpenChangeHandler}>
       <DropdownMenu.Trigger asChild onClick={onOpenHandler}>
@@ -98,7 +97,7 @@ export const DropDownMenu = ({
           onCloseAutoFocus={onCloseAutoFocusHandler}
           align={align}
           side={side}
-          className={s.dropdownMenuContent}
+          className={contentClassName}
           sideOffset={5}
         >
           <motion.div variants={container} initial="hidden" animate="visible">
