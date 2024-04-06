@@ -31,3 +31,73 @@ export const getNumericDayMonthTime = (
 
   return date.toLocaleDateString(locale, options)
 }
+
+export const formatRelativeTime = (messageTime: string): string => {
+  const now = new Date()
+  const messageDate = new Date(messageTime)
+  const diffInSeconds: number = Math.floor((now.getTime() - messageDate.getTime()) / 1000)
+  const diffInMinutes: number = Math.floor(diffInSeconds / 60)
+  const diffInHours: number = Math.floor(diffInMinutes / 60)
+  const diffInDays: number = Math.floor(diffInHours / 24)
+
+  let timeString = ''
+
+  if (diffInSeconds < 60) {
+    timeString = 'Now'
+  } else if (diffInMinutes < 60) {
+    timeString = `${diffInMinutes} min ago`
+  } else if (diffInHours < 24) {
+    timeString = `${diffInHours}h ago`
+  } else if (diffInDays < 7) {
+    const days: number = messageDate.getDay()
+
+    timeString = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][
+      days
+    ]
+  } else if (diffInDays >= 7 && diffInDays < 365) {
+    // More than a week ago but within this year
+    const day = messageDate.getDate()
+    const month = messageDate.getMonth()
+
+    timeString = `${day} ${
+      [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ][month]
+    }`
+  } else {
+    // More than a year ago or in the future
+    const day = messageDate.getDate()
+    const month = messageDate.getMonth()
+    const year = messageDate.getFullYear()
+
+    timeString = `${day} ${
+      [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ][month]
+    } ${year}`
+  }
+
+  return timeString
+}
