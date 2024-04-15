@@ -46,7 +46,7 @@ export const Posts = ({ scrollableID, userId, postId }: Props) => {
   const [lastUploadedPostId, setLastUploadedPostId] = useState<Nullable<number>>(null)
   const [openModal, setOpenModal] = useState(false)
 
-  const hasMorePosts = postsData ? postsData.items.length > posts.length : false
+  const hasMorePosts = postsData ? postsData.items.length >= posts.length : false
 
   useEffect(() => {
     if (postsData) {
