@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 
 import s from './AddPostPublicationModal.module.scss'
 
-import { Avatar } from '@/entities'
+import { Avatar, selectPhotosPosts } from '@/entities'
 import {
   postsActions,
   UploadIdType,
@@ -31,7 +31,7 @@ type Props = {
 
 export const AddPostPublicationModal = ({ addPostPublicationModal }: Props) => {
   const { t } = useTranslation()
-  const images = useAppSelector(state => state.postsSlice.photosPosts)
+  const images = useAppSelector(selectPhotosPosts)
   const dispatch = useAppDispatch()
 
   const { data } = useGetProfileQuery()

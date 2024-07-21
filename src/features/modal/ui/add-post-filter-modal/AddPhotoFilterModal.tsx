@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 import s from './AddPostFilterModal.module.scss'
 
-import { postsActions } from '@/entities/posts'
+import { postsActions, selectPhotosPosts } from '@/entities/posts'
 import { modalActions, NameExtraModal, NameModal } from '@/features/modal'
 import { filters } from '@/shared/contstants'
 import { useModalImagePagination, useTranslation } from '@/shared/hooks'
@@ -17,7 +17,7 @@ type Props = {
 }
 export const AddPostFilterModal = ({ addPostFilterModal }: Props) => {
   const { t } = useTranslation()
-  const images = useAppSelector(state => state.postsSlice.photosPosts)
+  const images = useAppSelector(selectPhotosPosts)
   const dispatch = useAppDispatch()
 
   const { imageSrc, currentImage, activeIndex, setActiveIndex, nextImage, prevImage } =

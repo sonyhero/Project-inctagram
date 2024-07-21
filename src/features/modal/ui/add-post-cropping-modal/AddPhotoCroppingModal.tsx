@@ -6,7 +6,7 @@ import AvatarEditor from 'react-avatar-editor'
 
 import s from './AddPostCroppingModal.module.scss'
 
-import { postsActions, PostType, SizeType } from '@/entities/posts'
+import { postsActions, PostType, selectPhotosPosts, SizeType } from '@/entities/posts'
 import { modalActions, NameExtraModal, NameModal } from '@/features/modal'
 import { getPostsDataFromDB } from '@/shared/config/draftDataBase'
 import { useModalImagePagination, useTranslation } from '@/shared/hooks'
@@ -36,7 +36,7 @@ type Props = {
 
 export const AddPostCroppingModal = ({ addPostCroppingModal }: Props) => {
   const { t } = useTranslation()
-  const images = useAppSelector(state => state.postsSlice.photosPosts)
+  const images = useAppSelector(selectPhotosPosts)
   const dispatch = useAppDispatch()
 
   const postsList = useLiveQuery(getPostsDataFromDB)

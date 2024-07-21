@@ -9,6 +9,7 @@ import s from './Posts.module.scss'
 import {
   GetAllPublicPostsArgs,
   postsActions,
+  selectPosts,
   useGetPublicPostByIdQuery,
   useGetUserPublicPostsQuery,
   useLazyGetUserPublicPostsQuery,
@@ -39,7 +40,7 @@ export const Posts = ({ scrollableID, userId, postId }: Props) => {
   const { data: postById } = useGetPublicPostByIdQuery({ postId }, { skip: !postId })
   const [getNextPosts] = useLazyGetUserPublicPostsQuery()
 
-  const posts = useAppSelector(state => state.postsSlice.posts)
+  const posts = useAppSelector(selectPosts)
   const dispatch = useAppDispatch()
 
   const { innerHeight } = useResize()

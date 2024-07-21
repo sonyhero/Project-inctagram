@@ -2,7 +2,7 @@ import React from 'react'
 
 import s from './ClosePostModal.module.scss'
 
-import { postsActions } from '@/entities/posts'
+import { postsActions, selectPhotosPosts } from '@/entities/posts'
 import { modalActions } from '@/features/modal'
 import {
   clearDescriptionDB,
@@ -21,7 +21,7 @@ type Props = {
 export const ClosePostModal = ({ closeAddPostModal }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const photosPosts = useAppSelector(state => state.postsSlice.photosPosts)
+  const photosPosts = useAppSelector(selectPhotosPosts)
 
   const handleClose = () => {
     clearPostsDB()
