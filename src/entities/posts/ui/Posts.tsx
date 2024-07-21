@@ -15,6 +15,7 @@ import {
 } from '@/entities'
 import { ViewPostModal } from '@/features/modal'
 import { PATH } from '@/shared/config/routes'
+import { useResize } from '@/shared/hooks'
 import { useAppDispatch, useAppSelector } from '@/shared/store'
 import { Nullable } from '@/shared/types'
 import { Modal } from '@/shared/ui'
@@ -41,8 +42,7 @@ export const Posts = ({ scrollableID, userId, postId }: Props) => {
   const posts = useAppSelector(state => state.postsSlice.posts)
   const dispatch = useAppDispatch()
 
-  const [innerHeight, setInnerHeight] = useState<number>(0)
-  const [paddingValue, setPaddingValue] = useState<number>(200)
+  const { innerHeight } = useResize()
   const [lastUploadedPostId, setLastUploadedPostId] = useState<Nullable<number>>(null)
   const [openModal, setOpenModal] = useState(false)
 
@@ -55,24 +55,10 @@ export const Posts = ({ scrollableID, userId, postId }: Props) => {
   }, [postsData])
 
   useEffect(() => {
-    const handleResize = () => {
-      setInnerHeight(window.innerHeight)
+    if (postId) {
+      setOpenModal(true)
     }
-
-    window.addEventListener('resize', handleResize)
-
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
-
-  useEffect(() => {
-    const height = window.innerHeight
-    const profileContentHeight = 730
-    const padding = height - profileContentHeight
-
-    setPaddingValue(padding)
-  }, [innerHeight])
+  }, [postId])
 
   const fetchPostsData = () => {
     const lastPostId = posts.slice(-1)[0].id
@@ -86,12 +72,6 @@ export const Posts = ({ scrollableID, userId, postId }: Props) => {
         })
     }
   }
-
-  useEffect(() => {
-    if (postId) {
-      setOpenModal(true)
-    }
-  }, [postId])
 
   const onCloseHandler = () => {
     setOpenModal(false)
@@ -115,17 +95,17 @@ export const Posts = ({ scrollableID, userId, postId }: Props) => {
         loader={<span>...loading</span>}
         className={s.postsBlock}
         scrollableTarget={scrollableID}
-        style={{ paddingBottom: `${paddingValue}px` }}
+        style={{ paddingBottom: `${innerHeight - 730}px` }}
       >
-        {posts.map(el => {
-          const src = el.images.filter(img => img.width === 1440)
+        {posts.map(post => {
+          const src = post.images.filter(img => img.width === 1440)
 
-          const openPostModalHandler = () => push(`${PATH.USER}/${userId}/${el.id}`)
+          const openPostModalHandler = () => push(`${PATH.USER}/${userId}/${post.id}`)
 
           return (
             <Image
               src={src[0]?.url ?? imageIcon}
-              key={el.id}
+              key={post.id}
               width={200}
               height={200}
               priority={true}
