@@ -5,6 +5,11 @@ import { useRouter } from 'next/router'
 import s from './MyPayments.module.scss'
 
 import { useMyPaymentsQuery } from '@/entities/subscription/api/subscriptionApi'
+import {
+  selectCurrentPage,
+  selectPageSize,
+  selectPaginationOptions,
+} from '@/entities/subscription/model'
 import { setCurrentPage, setPageSize } from '@/entities/subscription/model/subscriptionSlice'
 import { useTranslation } from '@/shared/hooks'
 import { useAppDispatch, useAppSelector } from '@/shared/store'
@@ -19,9 +24,9 @@ export const MyPayments = () => {
   const dispatch = useAppDispatch()
   const { t } = useTranslation()
 
-  const paginationOptions = useAppSelector(state => state.subscriptionSlice.paginationOptions)
-  const currentPage = useAppSelector(state => state.subscriptionSlice.currentPage)
-  const pageSize = useAppSelector(state => state.subscriptionSlice.pageSize)
+  const paginationOptions = useAppSelector(selectPaginationOptions)
+  const currentPage = useAppSelector(selectCurrentPage)
+  const pageSize = useAppSelector(selectPageSize)
 
   const pagesCount = myPaymentsData ? Math.ceil(myPaymentsData.length / pageSize) : 0
 

@@ -18,7 +18,7 @@ import {
   setIsSuccessStripePayment,
   setOpenPaymentModal,
   setPayment,
-} from '@/entities/subscription/model/subscriptionSlice'
+} from '@/entities/subscription/model'
 import { SubscriptionModal } from '@/features/modal/ui/subscription-modal'
 import { PATH } from '@/shared/config/routes'
 import { useAppDispatch, useAppSelector } from '@/shared/store'
