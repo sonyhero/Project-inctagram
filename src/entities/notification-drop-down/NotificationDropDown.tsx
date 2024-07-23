@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import s from './NotificationDropDown.module.scss'
 
-import { useMarkNotificationAsReadMutation } from '@/features/notifications'
+import { selectNotifications, useMarkNotificationAsReadMutation } from '@/features/notifications'
 import { useAppSelector } from '@/shared/store'
 import { Bell, Typography } from '@/shared/ui'
 import { DropDownMenu } from '@/shared/ui/drop-down-menu'
@@ -10,7 +10,7 @@ import { formatRelativeTime } from '@/shared/utils'
 
 export const NotificationDropDown = () => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false)
-  const notifications = useAppSelector(state => state.notificationsSlice.notifications)
+  const notifications = useAppSelector(selectNotifications)
   const [markNotificationsAsRead] = useMarkNotificationAsReadMutation()
 
   const dropDownItems = [
