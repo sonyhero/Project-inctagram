@@ -7,15 +7,19 @@ import s from './SettingsSwitcher.module.scss'
 import { useTranslation } from '@/shared/hooks'
 import { useAppDispatch, useAppSelector } from '@/shared/store'
 import { TabSwitcher } from '@/shared/ui'
-import { setCurrentOption } from '@/widgets/profile-settings'
+import {
+  selectCurrentOption,
+  selectTabSwitcherOptions,
+  setCurrentOption,
+} from '@/widgets/profile-settings'
 import { SettingsPathValuesTypes } from '@/widgets/profile-settings/model/profileSettingsSlice.types'
 
 export const SettingsSwitcher = () => {
   const { t } = useTranslation()
   const { push, asPath } = useRouter()
 
-  const tabSwitcherOptions = useAppSelector(state => state.profileSettingsSlice.tabSwitcherOptions)
-  const currentOption = useAppSelector(state => state.profileSettingsSlice.currentOption)
+  const tabSwitcherOptions = useAppSelector(selectTabSwitcherOptions)
+  const currentOption = useAppSelector(selectCurrentOption)
   const dispatch = useAppDispatch()
 
   const handleTabSort = (value: string) => {
