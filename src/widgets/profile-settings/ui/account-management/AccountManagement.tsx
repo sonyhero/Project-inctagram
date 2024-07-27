@@ -14,6 +14,10 @@ import {
 import { SubscriptionDurationType } from '@/entities/subscription/api/subscriptionApi.types'
 import {
   PaymentType,
+  selectAccountTypeOptions,
+  selectIsOpenModal,
+  selectIsSuccessPaypal,
+  selectIsSuccessStripe,
   setIsSuccessPayPalPayment,
   setIsSuccessStripePayment,
   setOpenPaymentModal,
@@ -33,15 +37,11 @@ export const AccountManagement = () => {
   const { push, query, pathname } = useRouter()
 
   const dispatch = useAppDispatch()
-  const isSuccessPaypal = useAppSelector(
-    state => state.subscriptionSlice.payment.isSuccessPayPalPayment
-  )
-  const isSuccessStripe = useAppSelector(
-    state => state.subscriptionSlice.payment.isSuccessStripePayment
-  )
+  const isSuccessPaypal = useAppSelector(selectIsSuccessPaypal)
+  const isSuccessStripe = useAppSelector(selectIsSuccessStripe)
 
-  const accountTypeOptions = useAppSelector(state => state.subscriptionSlice.accountTypeOptions)
-  const isOpenModal = useAppSelector(state => state.subscriptionSlice.payment.isOpenModal)
+  const accountTypeOptions = useAppSelector(selectAccountTypeOptions)
+  const isOpenModal = useAppSelector(selectIsOpenModal)
 
   const [accountTypeId, setAccountTypeId] = useState<number>(accountTypeOptions[0].id)
   const [subscriptionId, setSubscriptionId] = useState<number>(0)
