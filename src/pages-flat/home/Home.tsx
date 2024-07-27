@@ -12,7 +12,11 @@ import {
 import { PublicPost } from '@/entities/public-posts/ui/PublicPost'
 import { useResize } from '@/shared/hooks'
 import { useAppDispatch, useAppSelector } from '@/shared/store'
-import { publicPostsActions } from 'src/entities/public-posts/model'
+import {
+  publicPostsActions,
+  selectAllPosts,
+  selectLastUploadedPostId,
+} from 'src/entities/public-posts/model'
 
 const postDataArgs: GetAllPublicPostsArgs = {
   pageSize: 8,
@@ -27,8 +31,8 @@ export const Home = () => {
 
   const [getNextPosts] = useLazyGetAllPublicPostsQuery()
 
-  const allPosts = useAppSelector(state => state.publicPostsSlice.allPosts)
-  const lastUploadedPostId = useAppSelector(state => state.publicPostsSlice.lastUploadedPostId)
+  const allPosts = useAppSelector(selectAllPosts)
+  const lastUploadedPostId = useAppSelector(selectLastUploadedPostId)
   const dispatch = useAppDispatch()
 
   useEffect(() => {
