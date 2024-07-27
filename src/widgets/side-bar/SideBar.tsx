@@ -14,6 +14,8 @@ import {
   modalSlice,
   NameExtraModal,
   NameModal,
+  selectModal,
+  selectModalExtra,
 } from '@/features/modal'
 import { PATH } from '@/shared/config/routes'
 import { useTranslation } from '@/shared/hooks/useTranstaion'
@@ -27,8 +29,8 @@ export const SideBar = () => {
   const { linksOptions } = useGetLinks()
   const dispatch = useAppDispatch()
 
-  const modal = useAppSelector(state => state.modalSlice.open)
-  const modalExtra = useAppSelector(state => state.modalSlice.openExtraModal)
+  const modal = useAppSelector(selectModal)
+  const modalExtra = useAppSelector(selectModalExtra)
 
   const logoutHandler = () => {
     dispatch(modalSlice.actions.setOpenModal(NameModal.logOut))
