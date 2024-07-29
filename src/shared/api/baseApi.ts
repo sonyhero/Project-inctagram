@@ -16,6 +16,7 @@ export const baseApi = createApi({
     'User',
     'Notifications',
     'PostById',
+    'CommentsPostById',
   ],
   baseQuery: customFetchBase,
   extractRehydrationInfo(action, { reducerPath }) {

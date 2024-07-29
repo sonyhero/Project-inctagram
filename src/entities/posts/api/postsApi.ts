@@ -1,5 +1,7 @@
 import {
   GetAllPublicPostsArgs,
+  GetPublicCommentsArgs,
+  GetPublicCommentsResponse,
   GetPublicPostsResponse,
   GetPublicUserProfileByIdResponse,
   GetUserPublicPostsArgs,
@@ -52,26 +54,18 @@ const postsApi = baseApi.injectEndpoints({
         invalidatesTags: ['Posts', 'User'],
       }),
       getAllPublicPosts: builder.query<GetPublicPostsResponse, GetAllPublicPostsArgs>({
-        query: args => ({
-          url: `v1/public-posts/all/${args.endCursorPostId}`,
+        query: ({ endCursorPostId, ...params }) => ({
+          url: `v1/public-posts/all/${endCursorPostId}`,
           method: 'GET',
-          params: {
-            pageSize: args.pageSize,
-            sortBy: args.sortBy,
-            sortDirection: args.sortDirection,
-          },
+          params,
         }),
         providesTags: ['Posts'],
       }),
       getUserPublicPosts: builder.query<GetPublicPostsResponse, GetUserPublicPostsArgs>({
-        query: args => ({
-          url: `v1/public-posts/user/${args.userId}/${args.endCursorPostId}`,
+        query: ({ userId, endCursorPostId, ...params }) => ({
+          url: `v1/public-posts/user/${userId}/${endCursorPostId}`,
           method: 'GET',
-          params: {
-            pageSize: args.pageSize,
-            sortBy: args.sortBy,
-            sortDirection: args.sortDirection,
-          },
+          params,
         }),
         providesTags: ['Posts'],
       }),
@@ -81,6 +75,14 @@ const postsApi = baseApi.injectEndpoints({
           method: 'GET',
         }),
         providesTags: ['PostById'],
+      }),
+      getPublicPostComments: builder.query<GetPublicCommentsResponse, GetPublicCommentsArgs>({
+        query: ({ postId, ...params }) => ({
+          url: `v1/public-posts/${postId}/comments`,
+          method: 'GET',
+          params,
+        }),
+        providesTags: ['CommentsPostById'],
       }),
       getPublicUserProfileById: builder.query<
         GetPublicUserProfileByIdResponse,
@@ -109,6 +111,7 @@ export const {
   useLazyGetPublicPostByIdQuery,
   useGetAllPublicPostsQuery,
   useLazyGetAllPublicPostsQuery,
+  useGetPublicPostCommentsQuery,
   util: { getRunningQueriesThunk },
 } = postsApi
 

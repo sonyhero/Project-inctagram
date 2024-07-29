@@ -18,6 +18,7 @@ export const commentsApi = baseApi.injectEndpoints({
           method: 'POST',
           body,
         }),
+        invalidatesTags: ['CommentsPostById'],
       }),
       addAnswer: builder.mutation<AnswerResponseType, AnswerArgsType>({
         query: ({ postId, commentId, ...body }) => ({

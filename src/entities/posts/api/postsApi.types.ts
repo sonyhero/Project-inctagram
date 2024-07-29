@@ -1,3 +1,5 @@
+import { CommentsResponseType } from '@/features/comments/api'
+
 export type PostArgsType = {
   description: string
   childrenMetadata: UploadIdType[]
@@ -27,7 +29,6 @@ export type ImageType = {
   fileSize: number
 }
 export type PostsImagesResponseType = ImageType & UploadIdType
-
 export type GetAllPublicPostsArgs = {
   endCursorPostId?: number
   pageSize?: number
@@ -37,14 +38,12 @@ export type GetAllPublicPostsArgs = {
 export type GetUserPublicPostsArgs = GetAllPublicPostsArgs & {
   userId: number
 }
-
 export type GetPublicUserProfileByIdResponse = {
   id: number
   userName: string
   aboutMe: string
   avatars: ImageType[]
 }
-
 export type GetPublicPostsResponse = {
   totalCount: number
   pageSize: number
@@ -53,4 +52,10 @@ export type GetPublicPostsResponse = {
 }
 export type PostsImagesResponse = {
   images: PostsImagesResponseType[]
+}
+export type GetPublicCommentsArgs = Omit<GetAllPublicPostsArgs, 'endCursorPostId'> & {
+  postId: number
+}
+export type GetPublicCommentsResponse = Omit<GetPublicPostsResponse, 'totalUsers' | 'items'> & {
+  items: CommentsResponseType[]
 }
