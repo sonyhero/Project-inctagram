@@ -10,4 +10,34 @@ export type CommentsResponseType = {
   }
   content: string
   createdAt: Date
+  answerCount: number
+  likeCount: number
+  isLiked: boolean
+}
+
+export type CommentsArgsType = {
+  postId: number
+  content: string
+}
+
+export type AnswerResponseType = Omit<CommentsResponseType, 'answerCount'>
+
+export type AnswerArgsType = CommentsArgsType & {
+  commentId: number
+}
+
+export type LikeCommentArgsType = {
+  postId: number
+  commentId: number
+  likeStatus: LikeStatus
+}
+
+export type LikeAnswerArgsType = LikeCommentArgsType & {
+  answerId: number
+}
+
+export enum LikeStatus {
+  NONE = 'NONE',
+  LIKE = 'LIKE',
+  DISLIKE = 'DISLIKE',
 }
