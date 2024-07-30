@@ -6,12 +6,16 @@ import { toast } from 'react-toastify'
 
 import s from './ViewPostModal.module.scss'
 
-import { PostsResponseType, useGetPublicUserProfileByIdQuery } from '@/entities'
+import {
+  PostsResponseType,
+  useGetPublicPostCommentsQuery,
+  useGetPublicUserProfileByIdQuery,
+} from '@/entities'
 import { AvatarOwner } from '@/entities/avatar-owner'
-import { useUpdatePostByIdMutation } from '@/entities/posts'
 import { useMeQuery } from '@/features/auth'
 import { useAddCommentMutation } from '@/features/comments/api'
 import { modalActions, NameExtraModal } from '@/features/modal'
+import { EditBlock } from '@/features/modal/ui/view-post-modal/edit-block'
 import { PATH } from '@/shared/config/routes'
 import { usePostImagePagination, useTranslation } from '@/shared/hooks'
 import { useAppDispatch } from '@/shared/store'
@@ -24,7 +28,6 @@ import {
   MoreHorizontal,
   PaperPlane,
   PhotoPagination,
-  TextAreaField,
   TextField,
   Trash,
   Typography,
@@ -43,8 +46,9 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
   const postId = Number(query.userId?.[1])
   const profileId = Number(query.userId?.[0])
   const { data: profileData } = useGetPublicUserProfileByIdQuery({ profileId })
-  const [updatePost] = useUpdatePostByIdMutation()
   const [addComment, { isLoading }] = useAddCommentMutation()
+  const { data: comments } = useGetPublicPostCommentsQuery({ postId, pageSize: 6 })
+
   const { t } = useTranslation()
 
   const { data: meData } = useMeQuery()
@@ -53,7 +57,6 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
   const dispatch = useAppDispatch()
 
   const [editMode, setEditMode] = useState(false)
-  const [value, setValue] = useState(postById?.description ?? '')
 
   const [comment, setComment] = useState<string>('')
 
@@ -69,10 +72,6 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
       onClose()
       push(`${PATH.USER}/${profileId}`)
     }
-  }
-
-  const onChangeTextHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(event.currentTarget.value)
   }
 
   const onChangeCommentTextHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -108,18 +107,6 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
       ),
     },
   ]
-  const onSaveHandler = () => {
-    if (postId) {
-      updatePost({
-        postId,
-        description: value.length > 500 ? value.slice(0, 500) : value,
-      })
-        .unwrap()
-        .then(() => {
-          setEditMode(false)
-        })
-    }
-  }
 
   const onPublishCommentHandler = () => {
     if (postId) {
@@ -127,6 +114,7 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
         .unwrap()
         .then(() => {
           toast.success('Комментарий добавлен')
+          setComment('')
         })
     }
   }
@@ -176,23 +164,39 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
                 )}
               </div>
               <div className={s.middleContent}>
-                <div className={s.comments}>
-                  {postById?.description && (
-                    <>
-                      <AvatarOwner
-                        avatarOwner={profileData?.avatars?.[0]?.url}
-                        className={s.avatar}
-                      />
-                      <div className={s.descriptionBlock}>
-                        <Typography variant={'regular14'} className={s.desc}>
-                          <strong>{profileData?.userName}</strong> {postById.description}
-                        </Typography>
-                        <Typography variant={'small'} color={'secondary'}>
-                          {getDayMonthTime(postById.createdAt, locale ?? 'en')}
-                        </Typography>
+                {postById?.description && (
+                  <div className={s.descriptionBlock}>
+                    <AvatarOwner avatarOwner={profileData?.avatars?.[0]?.url} />
+                    <div>
+                      <Typography variant={'regular14'} className={s.desc}>
+                        <strong>{profileData?.userName}</strong> {postById.description}
+                      </Typography>
+                      <Typography variant={'small'} color={'secondary'}>
+                        {getDayMonthTime(postById.createdAt, locale ?? 'en')}
+                      </Typography>
+                    </div>
+                  </div>
+                )}
+
+                <div className={s.commentsBlock}>
+                  {comments?.items.map(comment => {
+                    const { from, content, id, createdAt } = comment
+
+                    return (
+                      <div className={s.comment} key={id}>
+                        <AvatarOwner avatarOwner={from?.avatars?.[0]?.url} />
+
+                        <div>
+                          <Typography variant={'regular14'} className={s.desc}>
+                            <strong>{from.username}</strong> {content}
+                          </Typography>
+                          <Typography variant={'small'} color={'secondary'}>
+                            {getDayMonthTime(createdAt.toString(), locale ?? 'en')}
+                          </Typography>
+                        </div>
                       </div>
-                    </>
-                  )}
+                    )
+                  })}
                 </div>
 
                 <div className={s.bottomActivityBlock}>
@@ -242,31 +246,7 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
               </div>
             </div>
           ) : (
-            <div className={s.editBlock}>
-              <div className={s.topContent}>
-                <div className={s.photoBlock}>
-                  <AvatarOwner avatarOwner={profileData?.avatars?.[0]?.url} className={s.avatar} />
-                  <Typography variant={'h3'}>{profileData?.userName}</Typography>
-                </div>
-                <div>
-                  <TextAreaField
-                    label={t.myProfile.profilePage.viewPost.label}
-                    placeholder={t.myProfile.profilePage.viewPost.placeholder}
-                    value={value}
-                    onChange={onChangeTextHandler}
-                    disabled={value.length > 500}
-                  />
-                  <Typography variant={'small'} color={'secondary'} className={s.balance}>
-                    {value.length}/500
-                  </Typography>
-                </div>
-              </div>
-              <div className={s.saveChangesBlock}>
-                <Button variant={'primary'} onClick={onSaveHandler}>
-                  {t.myProfile.profilePage.viewPost.saveChanges}
-                </Button>
-              </div>
-            </div>
+            <EditBlock setEditMode={setEditMode} postById={postById} />
           )}
         </div>
       )}
