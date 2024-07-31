@@ -2,13 +2,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import { createWrapper } from 'next-redux-wrapper'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 
-import { postsSlice } from '@/entities/posts'
+import { postsSlice } from '@/entities'
 import { publicPostsSlice } from '@/entities/public-posts'
-import { subscriptionSlice } from '@/entities/subscription/model/subscriptionSlice'
-import { modalSlice } from '@/features/modal/model/modalSlice'
+import { subscriptionSlice } from '@/entities/subscription/model'
+import { commentsSlice } from '@/features/comments'
+import { modalSlice } from '@/features/modal'
 import { notificationsSlice } from '@/features/notifications'
 import { baseApi } from '@/shared/api/baseApi'
-import { profileSettingsSlice } from '@/widgets/profile-settings/model/profileSettingsSlice'
+import { profileSettingsSlice } from '@/widgets/profile-settings'
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     [subscriptionSlice.name]: subscriptionSlice.reducer,
     [publicPostsSlice.name]: publicPostsSlice.reducer,
     [notificationsSlice.name]: notificationsSlice.reducer,
+    [commentsSlice.name]: commentsSlice.reducer,
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(baseApi.middleware),
 })
