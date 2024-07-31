@@ -54,6 +54,7 @@ export type PostsImagesResponse = {
   images: PostsImagesResponseType[]
 }
 export type GetPublicCommentsArgs = Omit<GetAllPublicPostsArgs, 'endCursorPostId'> & {
+  pageNumber?: number
   postId: number
 }
 export type GetPublicCommentsResponse = Omit<GetPublicPostsResponse, 'totalUsers' | 'items'> & {
