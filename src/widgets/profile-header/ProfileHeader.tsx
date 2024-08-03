@@ -13,11 +13,9 @@ import { useTranslation } from '@/shared/hooks'
 import { Button, Typography } from '@/shared/ui'
 import { ProfileStatistic } from '@/widgets/profile-statistic'
 
-type Props = {
-  profileId: number
-}
-
-export const ProfileHeader = ({ profileId }: Props) => {
+export const ProfileHeader = () => {
+  const { query } = useRouter()
+  const profileId = Number(query.userId?.[0])
   const { data: profileData } = useGetPublicUserProfileByIdQuery({ profileId })
 
   const { data: userData, isSuccess } = useGetUserQuery({ userName: profileData?.userName })

@@ -14,6 +14,7 @@ import {
   useGetUserPublicPostsQuery,
   useLazyGetUserPublicPostsQuery,
 } from '@/entities'
+import { commentsActions } from '@/features/comments'
 import { ViewPostModal } from '@/features/modal'
 import { PATH } from '@/shared/config/routes'
 import { useResize } from '@/shared/hooks'
@@ -24,8 +25,6 @@ import imageIcon from 'public/imageIcon.svg'
 
 type Props = {
   scrollableID: string
-  userId: number
-  postId: number
 }
 
 const postDataArgs: GetAllPublicPostsArgs = {
@@ -34,8 +33,12 @@ const postDataArgs: GetAllPublicPostsArgs = {
   sortDirection: 'desc',
 }
 
-export const Posts = ({ scrollableID, userId, postId }: Props) => {
-  const { push } = useRouter()
+export const Posts = ({ scrollableID }: Props) => {
+  const { push, query } = useRouter()
+
+  const userId = Number(query.userId?.[0])
+  const postId = Number(query.userId?.[1])
+
   const { data: postsData } = useGetUserPublicPostsQuery({ userId, ...postDataArgs })
   const { data: postById } = useGetPublicPostByIdQuery({ postId }, { skip: !postId })
   const [getNextPosts] = useLazyGetUserPublicPostsQuery()
@@ -75,6 +78,8 @@ export const Posts = ({ scrollableID, userId, postId }: Props) => {
   }
 
   const onCloseHandler = () => {
+    dispatch(commentsActions.deleteComments({}))
+    push(PATH.USER + `/${userId}`)
     setOpenModal(false)
   }
 
