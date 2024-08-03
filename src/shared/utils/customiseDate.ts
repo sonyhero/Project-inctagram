@@ -6,11 +6,22 @@ export function formatDate(date: Date): string {
   return `${month}.${day}.${year}`
 }
 
-export const getDayMonthTime = (dateString: string, locale: string) => {
+export const getDayMonthTime = (dateString: string, locale: string, showTime: boolean = false) => {
   const date = new Date(dateString)
-  const options = { year: 'numeric', month: 'short', day: '2-digit' } as const
+  const options = {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  } as const
 
-  return date.toLocaleDateString(locale, options)
+  const withTimeOptions = {
+    ...options,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  } as const
+
+  return date.toLocaleDateString(locale, showTime ? withTimeOptions : options)
 }
 
 export const getNumericDayMonthTime = (
@@ -40,7 +51,7 @@ export const formatRelativeTime = (messageTime: string): string => {
   const diffInHours: number = Math.floor(diffInMinutes / 60)
   const diffInDays: number = Math.floor(diffInHours / 24)
 
-  let timeString = ''
+  let timeString
 
   if (diffInSeconds < 60) {
     timeString = 'Now'
