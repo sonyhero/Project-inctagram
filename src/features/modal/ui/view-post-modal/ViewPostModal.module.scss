@@ -54,14 +54,17 @@
       }
 
       .middleContent {
+        //overflow: auto;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        justify-content: space-between;
+
+        //justify-content: space-between;
 
         .descriptionBlock {
           display: flex;
-          flex-grow: 1;
+
+          //flex-grow: 1;
           gap: 0.75rem;
           padding: 0.7rem 1.5rem;
 
@@ -73,9 +76,9 @@
         .commentsBlock {
           display: flex;
           flex-direction: column;
-          flex-grow: 1;
-          gap: 0.75rem;
 
+          //flex-grow: 1;
+          gap: 0.75rem;
           padding: 0.7rem 1.5rem;
 
           .comment {
@@ -88,46 +91,46 @@
             }
           }
         }
+      }
 
-        .bottomActivityBlock {
-          padding: 0.7rem 1.5rem;
-          border-top: 1px solid var(--color-dark-100);
+      .bottomActivityBlock {
+        padding: 0.7rem 1.5rem;
+        border-top: 1px solid var(--color-dark-100);
 
-          .likeSaveSetBlock {
+        .likeSaveSetBlock {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1.2rem;
+
+          .likeAndSet {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+          }
+        }
+
+        .viewsAndCount {
+          display: flex;
+          gap: 1.45rem;
+
+          .views {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.2rem;
 
-            .likeAndSet {
-              display: flex;
-              gap: 1.5rem;
-              align-items: center;
+            .view {
+              width: 1.5rem;
+              height: 1.5rem;
+              margin-right: -0.7rem;
+
+              background-color: var(--color-dark-500);
+              border-radius: 50%;
             }
           }
 
-          .viewsAndCount {
+          .count {
             display: flex;
-            gap: 1.45rem;
-
-            .views {
-              display: flex;
-              align-items: center;
-
-              .view {
-                width: 1.5rem;
-                height: 1.5rem;
-                margin-right: -0.7rem;
-
-                background-color: var(--color-dark-500);
-                border-radius: 50%;
-              }
-            }
-
-            .count {
-              display: flex;
-              gap: 5px;
-            }
+            gap: 5px;
           }
         }
       }

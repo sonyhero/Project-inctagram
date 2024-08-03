@@ -4,7 +4,6 @@ import { CommentsResponseType } from '@/features/comments/api'
 
 const initialState = {
   comments: [] as CommentsResponseType[],
-  pageNumber: 1,
   totalCount: 0,
 }
 
@@ -15,8 +14,8 @@ export const commentsSlice = createSlice({
     setComments: (state, action: PayloadAction<CommentsResponseType[]>) => {
       state.comments = [...state.comments, ...action.payload]
     },
-    setPageNumber: (state, _) => {
-      state.pageNumber++
+    deleteComments: (state, _) => {
+      state.comments = []
     },
     setTotalCount: (state, action: PayloadAction<number>) => {
       state.totalCount = action.payload

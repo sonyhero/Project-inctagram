@@ -1,29 +1,32 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 
 import ImageNext from 'next/image'
 import { useRouter } from 'next/router'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import { toast } from 'react-toastify'
 
 import s from './ViewPostModal.module.scss'
 
 import {
   PostsResponseType,
-  useGetPublicPostCommentsQuery,
   useGetPublicUserProfileByIdQuery,
+  useLazyGetPublicPostCommentsQuery,
 } from '@/entities'
 import { AvatarOwner } from '@/entities/avatar-owner'
 import { useMeQuery } from '@/features/auth'
+import { commentsActions, selectComments, selectTotalCount } from '@/features/comments'
 import { useAddCommentMutation } from '@/features/comments/api'
 import { modalActions, NameExtraModal } from '@/features/modal'
 import { EditBlock } from '@/features/modal/ui/view-post-modal/edit-block'
 import { PATH } from '@/shared/config/routes'
 import { usePostImagePagination, useTranslation } from '@/shared/hooks'
-import { useAppDispatch } from '@/shared/store'
+import { useAppDispatch, useAppSelector } from '@/shared/store'
 import {
   Bookmark,
   Button,
   Edit,
   Heart,
+  Loader,
   Modal,
   MoreHorizontal,
   PaperPlane,
@@ -47,7 +50,13 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
   const profileId = Number(query.userId?.[0])
   const { data: profileData } = useGetPublicUserProfileByIdQuery({ profileId })
   const [addComment, { isLoading }] = useAddCommentMutation()
-  const { data: comments } = useGetPublicPostCommentsQuery({ postId, pageSize: 6 })
+
+  const comments = useAppSelector(selectComments)
+  const totalCount = useAppSelector(selectTotalCount)
+
+  const [currentPage, setCurrentPage] = useState<number>(1)
+
+  const [getComments] = useLazyGetPublicPostCommentsQuery()
 
   const { t } = useTranslation()
 
@@ -119,6 +128,21 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
     }
   }
 
+  useEffect(() => {
+    getComments({ postId, pageSize: 6, pageNumber: currentPage })
+      .unwrap()
+      .then(res => {
+        if (res.items) {
+          dispatch(commentsActions.setComments(res.items))
+          dispatch(commentsActions.setTotalCount(res.totalCount))
+        }
+      })
+  }, [postId, currentPage])
+
+  const fetchHandler = () => {
+    setCurrentPage(prev => prev + 1)
+  }
+
   return (
     <Modal
       className={s.modalBlock}
@@ -178,8 +202,15 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
                   </div>
                 )}
 
-                <div className={s.commentsBlock}>
-                  {comments?.items.map(comment => {
+                <InfiniteScroll
+                  next={fetchHandler}
+                  hasMore={totalCount > comments.length}
+                  loader={<Loader />}
+                  dataLength={100}
+                  className={s.commentsBlock}
+                  height={275}
+                >
+                  {comments.map(comment => {
                     const { from, content, id, createdAt } = comment
 
                     return (
@@ -197,35 +228,34 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
                       </div>
                     )
                   })}
-                </div>
-
-                <div className={s.bottomActivityBlock}>
-                  <div className={s.likeSaveSetBlock}>
-                    <div className={s.likeAndSet}>
-                      <Heart />
-                      <PaperPlane />
-                    </div>
-                    <Bookmark />
+                </InfiniteScroll>
+              </div>
+              <div className={s.bottomActivityBlock}>
+                <div className={s.likeSaveSetBlock}>
+                  <div className={s.likeAndSet}>
+                    <Heart />
+                    <PaperPlane />
                   </div>
-                  <div className={s.viewsAndCount}>
-                    <div className={s.views}>
-                      {[0, 1, 2].map(el => {
-                        return <div key={el} className={s.view}></div>
-                      })}
-                    </div>
-                    <div className={s.count}>
-                      <Typography variant={'regular14'} color={'primary'}>
-                        0
-                      </Typography>
-                      <Typography variant={'bold14'} color={'primary'}>
-                        &quot;{t.myProfile.profilePage.viewPost.like}&quot;
-                      </Typography>
-                    </div>
-                  </div>
-                  <Typography variant={'small'} color={'secondary'}>
-                    {getDayMonthTime(postById.createdAt, locale ?? 'en')}
-                  </Typography>
+                  <Bookmark />
                 </div>
+                <div className={s.viewsAndCount}>
+                  <div className={s.views}>
+                    {[0, 1, 2].map(el => {
+                      return <div key={el} className={s.view}></div>
+                    })}
+                  </div>
+                  <div className={s.count}>
+                    <Typography variant={'regular14'} color={'primary'}>
+                      0
+                    </Typography>
+                    <Typography variant={'bold14'} color={'primary'}>
+                      &quot;{t.myProfile.profilePage.viewPost.like}&quot;
+                    </Typography>
+                  </div>
+                </div>
+                <Typography variant={'small'} color={'secondary'}>
+                  {getDayMonthTime(postById.createdAt, locale ?? 'en')}
+                </Typography>
               </div>
               <div className={s.bottomContent}>
                 <TextField
