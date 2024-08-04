@@ -33,6 +33,7 @@ export const commentsApi = baseApi.injectEndpoints({
           method: 'PUT',
           body,
         }),
+        // invalidatesTags: ['CommentsPostById'],
       }),
       addLikeAnswer: builder.mutation<void, LikeAnswerArgsType>({
         query: ({ postId, commentId, answerId, ...body }) => ({
@@ -51,3 +52,5 @@ export const {
   useAddLikeCommentMutation,
   useAddLikeAnswerMutation,
 } = commentsApi
+
+export const { addLikeComment } = commentsApi.endpoints

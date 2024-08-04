@@ -54,17 +54,12 @@
       }
 
       .middleContent {
-        //overflow: auto;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
 
-        //justify-content: space-between;
-
         .descriptionBlock {
           display: flex;
-
-          //flex-grow: 1;
           gap: 0.75rem;
           padding: 0.7rem 1.5rem;
 
@@ -76,8 +71,6 @@
         .commentsBlock {
           display: flex;
           flex-direction: column;
-
-          //flex-grow: 1;
           gap: 0.75rem;
           padding: 0.7rem 1.5rem;
 
@@ -88,6 +81,11 @@
 
             .desc {
               word-break: break-all;
+            }
+
+            .likesAndAnswers {
+              display: flex;
+              gap: 0.75rem;
             }
           }
         }

@@ -117,5 +117,9 @@ export const {
 } = postsApi
 
 //export endpoints for use in SSR
-export const { getUserPublicPosts, getPublicUserProfileById, getPublicPostById } =
-  postsApi.endpoints
+export const {
+  getUserPublicPosts,
+  getPublicUserProfileById,
+  getPublicPostById,
+  getPublicPostComments,
+} = postsApi.endpoints

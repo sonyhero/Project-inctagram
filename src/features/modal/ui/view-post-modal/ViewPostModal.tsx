@@ -9,12 +9,19 @@ import s from './ViewPostModal.module.scss'
 
 import {
   PostsResponseType,
+  useGetPublicPostCommentsQuery,
   useGetPublicUserProfileByIdQuery,
   useLazyGetPublicPostCommentsQuery,
 } from '@/entities'
 import { AvatarOwner } from '@/entities/avatar-owner'
 import { useMeQuery } from '@/features/auth'
-import { commentsActions, selectComments, selectTotalCount } from '@/features/comments'
+import {
+  LikeStatus,
+  selectComments,
+  selectCurrentPage,
+  selectTotalCount,
+  useAddLikeCommentMutation,
+} from '@/features/comments'
 import { useAddCommentMutation } from '@/features/comments/api'
 import { modalActions, NameExtraModal } from '@/features/modal'
 import { EditBlock } from '@/features/modal/ui/view-post-modal/edit-block'
@@ -53,10 +60,20 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
 
   const comments = useAppSelector(selectComments)
   const totalCount = useAppSelector(selectTotalCount)
-
-  const [currentPage, setCurrentPage] = useState<number>(1)
+  const currentPage = useAppSelector(selectCurrentPage)
 
   const [getComments] = useLazyGetPublicPostCommentsQuery()
+
+  useGetPublicPostCommentsQuery(
+    {
+      postId,
+      pageSize: 6,
+      pageNumber: 1,
+    },
+    { refetchOnMountOrArgChange: true }
+  )
+
+  const [addLikeComment] = useAddLikeCommentMutation()
 
   const { t } = useTranslation()
 
@@ -128,19 +145,8 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
     }
   }
 
-  useEffect(() => {
-    getComments({ postId, pageSize: 6, pageNumber: currentPage })
-      .unwrap()
-      .then(res => {
-        if (res.items) {
-          dispatch(commentsActions.setComments(res.items))
-          dispatch(commentsActions.setTotalCount(res.totalCount))
-        }
-      })
-  }, [postId, currentPage])
-
   const fetchHandler = () => {
-    setCurrentPage(prev => prev + 1)
+    getComments({ postId, pageSize: 6, pageNumber: currentPage })
   }
 
   return (
@@ -211,7 +217,24 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
                   height={275}
                 >
                   {comments.map(comment => {
-                    const { from, content, id, createdAt } = comment
+                    const {
+                      from,
+                      content,
+                      id,
+                      createdAt,
+                      isLiked,
+                      likeCount,
+                      answerCount,
+                      postId,
+                    } = comment
+
+                    const addLikeCommentHandler = () => {
+                      addLikeComment({
+                        postId,
+                        commentId: id,
+                        likeStatus: isLiked ? LikeStatus.NONE : LikeStatus.LIKE,
+                      })
+                    }
 
                     return (
                       <div className={s.comment} key={id}>
@@ -221,10 +244,19 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
                           <Typography variant={'regular14'} className={s.desc}>
                             <strong>{from.username}</strong> {content}
                           </Typography>
-                          <Typography variant={'small'} color={'secondary'}>
-                            {getDayMonthTime(createdAt.toString(), locale ?? 'en')}
-                          </Typography>
+                          <div className={s.likesAndAnswers}>
+                            <Typography variant={'small'} color={'secondary'}>
+                              {getDayMonthTime(createdAt.toString(), locale ?? 'en', true)}
+                            </Typography>
+                            <Typography variant={'sb_small'} color={'secondary'}>
+                              Likes: {likeCount}
+                            </Typography>
+                            <Typography variant={'sb_small'} color={'secondary'}>
+                              Answer
+                            </Typography>
+                          </div>
                         </div>
+                        <Heart onClick={addLikeCommentHandler} outline={!isLiked} />
                       </div>
                     )
                   })}
