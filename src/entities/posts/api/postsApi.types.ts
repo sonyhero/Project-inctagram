@@ -21,6 +21,8 @@ export type PostsResponseType = {
     firstName: string
     lastName: string
   }
+  likesCount: number
+  isLiked: boolean
 }
 export type ImageType = {
   url: string
