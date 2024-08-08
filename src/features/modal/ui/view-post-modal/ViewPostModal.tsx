@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 
 import ImageNext from 'next/image'
 import { useRouter } from 'next/router'
@@ -278,7 +278,7 @@ export const ViewPostModal = ({ open, onClose, postById }: Props) => {
                   </div>
                   <div className={s.count}>
                     <Typography variant={'regular14'} color={'primary'}>
-                      0
+                      {postById.likesCount}
                     </Typography>
                     <Typography variant={'bold14'} color={'primary'}>
                       &quot;{t.myProfile.profilePage.viewPost.like}&quot;
